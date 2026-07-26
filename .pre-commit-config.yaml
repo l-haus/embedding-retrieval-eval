@@ -1,0 +1,25 @@
+# Fast, formatting-only hooks. Tests are deliberately NOT run here: the commit
+# history is test-first, so test-only commits are expected to be red.
+# Run `make test` (or `make check`) yourself.
+#
+# First-time setup:  make hooks
+# Pin current revs:  uv run pre-commit autoupdate
+
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.0
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=512]
