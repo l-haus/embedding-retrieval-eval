@@ -57,3 +57,13 @@ def test_ndcg_perfect_ordering_is_one():
 
 def test_ndcg_zero_when_no_gain():
     assert metrics.ndcg_at_k(["d1", "d3"], {"d2": 1}, 2) == 0.0
+
+
+def test_ndcg_idcg_truncates_to_k():
+    # Perfect top-3 should score 1.0 even when more relevant docs exist beyond k.
+    got = metrics.ndcg_at_k(
+        ["d1", "d2", "d3"],
+        {"d1": 1, "d2": 1, "d3": 1, "d4": 1, "d5": 1},
+        3,
+    )
+    assert got == pytest.approx(1.0)
