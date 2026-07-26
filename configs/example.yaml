@@ -1,0 +1,14 @@
+dataset:
+  documents_path: data/sample_documents.jsonl
+  queries_path: data/sample_queries.jsonl
+  labels_path: data/relevance_labels.jsonl
+
+retrieval:
+  top_k: 5
+  similarity: cosine
+
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+
+output:
+  run_dir: runs/example_run

@@ -1,0 +1,6 @@
+{"doc_id": "d1", "text": "The system validates manifests before batch processing."}
+{"doc_id": "d2", "text": "Embedding models convert text into dense vectors for similarity search."}
+{"doc_id": "d3", "text": "FAISS provides efficient nearest-neighbor search over large vector indices."}
+{"doc_id": "d4", "text": "Data validation catches schema errors and missing fields before training."}
+{"doc_id": "d5", "text": "Redis caching reduces repeated retrieval latency in production services."}
+{"doc_id": "d6", "text": "A confusion matrix summarizes classification errors by class."}
