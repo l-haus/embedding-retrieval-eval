@@ -1,11 +1,9 @@
 """Retrieval metrics.
 
-These functions define the *contract* the tests pin down. Read the conventions
-in each docstring carefully — they resolve the usual ambiguities (what to divide
-by, how to handle empty inputs).
-
-Implement: `precision_at_k`, `recall_at_k`, `reciprocal_rank`,
-`mean_reciprocal_rank`, `ndcg_at_k`.
+Each function documents the convention it follows, since the standard
+definitions leave real ambiguity: what precision divides by, how to handle
+queries with no relevant documents, and which documents compete for nDCG's
+ideal ranking.
 """
 
 from __future__ import annotations

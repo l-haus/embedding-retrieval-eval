@@ -1,6 +1,8 @@
-"""TDD spec for metrics. Implement src/retrieval_eval/metrics.py until these pass.
+"""Tests for retrieval metrics.
 
-Run: pytest tests/test_metrics.py
+Each metric is checked against small hand-computed examples, including the
+edge cases the definitions gloss over: fewer than k results retrieved,
+queries with no relevant documents, and relevance sets larger than k.
 """
 
 import pytest
