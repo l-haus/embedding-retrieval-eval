@@ -37,8 +37,12 @@ before drawing conclusions from a report.
 
 ## Method
 
-- **Single similarity metric.** Cosine only. No lexical or hybrid baseline in
-  the core; see `roadmap.md`.
+- **Single similarity metric.** Cosine only; any other `similarity` value in
+  the config is rejected rather than silently ignored. No lexical or hybrid
+  baseline in the core; see `roadmap.md`.
+- **MRR is MRR@k.** Like every other metric here, reciprocal rank is cut at
+  `top_k`: a relevant document first appearing below the cut contributes 0,
+  not 1/rank. Uncut MRR would credit retrieval the user never sees.
 - **nDCG ideal ranking.** The ideal ranking is built from the full relevance
   set, including documents that were never retrieved, then scored to depth k.
   Missing a relevant document lowers nDCG, while a perfect top-k still scores
