@@ -55,6 +55,15 @@ change a conclusion.
 
 ## Evaluation
 
+**BEIR SciFact as the reference dataset** — `planned`
+
+A conversion script from BEIR's format (`_id`, title and text, qrels TSV) to
+the harness's JSONL, filtered to the 300-claim test split, with the data
+downloaded rather than committed (SciFact is CC BY-NC 2.0). Replaces the
+illustrative sample with a real benchmark, and its published nDCG@10 figures
+give an external check that the metrics are implemented correctly. Scored at
+`top_k: 10` to match how those figures are reported.
+
 **Config comparison run** — `planned`
 
 `configs/compare_configs.yaml` exists but nothing consumes it. A `compare`

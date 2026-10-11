@@ -23,6 +23,11 @@ before drawing conclusions from a report.
   the harness's hidden assumptions. The consequence is that inconsistent input
   formatting shows up as lower scores with no indication of the cause. Clean
   and normalize upstream, consistently across documents and queries.
+- **Long texts are truncated silently.** Embedding models have a maximum input
+  length; `all-MiniLM-L6-v2` truncates anything beyond 256 word pieces. Text
+  past that limit never reaches the model, and nothing in the report says how
+  much of the corpus was cut. On collections of full abstracts this can be a
+  large share of the text.
 - **Duplicate detection is exact-match only.** Documents differing by
   whitespace, punctuation, or markup are distinct to this tool even when
   identical to a reader.
