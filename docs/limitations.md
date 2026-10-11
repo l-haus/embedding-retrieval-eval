@@ -45,6 +45,11 @@ before drawing conclusions from a report.
 - **Single similarity metric.** Cosine only; any other `similarity` value in
   the config is rejected rather than silently ignored. No lexical or hybrid
   baseline in the core; see `roadmap.md`.
+- **precision@k is capped by the number of relevant documents.** A query with
+  two relevant documents scores at most 2/k, however good the ranking. On
+  sparsely labelled data a low precision can therefore be a perfect result;
+  read it alongside recall and nDCG, which are normalized to what was
+  achievable.
 - **MRR is MRR@k.** Like every other metric here, reciprocal rank is cut at
   `top_k`: a relevant document first appearing below the cut contributes 0,
   not 1/rank. Uncut MRR would credit retrieval the user never sees.
