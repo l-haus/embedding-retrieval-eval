@@ -23,11 +23,12 @@ before drawing conclusions from a report.
   the harness's hidden assumptions. The consequence is that inconsistent input
   formatting shows up as lower scores with no indication of the cause. Clean
   and normalize upstream, consistently across documents and queries.
-- **Long texts are truncated silently.** Embedding models have a maximum input
-  length; `all-MiniLM-L6-v2` truncates anything beyond 256 word pieces. Text
-  past that limit never reaches the model, and nothing in the report says how
-  much of the corpus was cut. On collections of full abstracts this can be a
-  large share of the text.
+- **Long texts are truncated.** Embedding models have a maximum input length;
+  `all-MiniLM-L6-v2` drops everything past 256 word pieces, so a long document
+  is embedded from its opening only. The report counts how many documents and
+  queries were cut, but cannot say whether the cut-off text mattered. On
+  collections of full abstracts the share can be large. Custom embedders that
+  do not implement `count_truncated` are reported as "not measured".
 - **Duplicate detection is exact-match only.** Documents differing by
   whitespace, punctuation, or markup are distinct to this tool even when
   identical to a reader.
@@ -71,11 +72,12 @@ before drawing conclusions from a report.
 
 ## Reproducibility
 
-- **Model names are not pinned to a revision.** A config naming
-  `sentence-transformers/all-MiniLM-L6-v2` resolves to whatever the model hub
-  serves at run time. The same config can therefore load different weights
-  months apart and produce different numbers, with nothing in the report
-  indicating that anything changed. This is the largest remaining gap in the
-  harness's reproducibility claim, and unlike the others it is inherited from
-  the ecosystem rather than chosen. Recording a revision hash alongside the
-  model name would close it; see `roadmap.md`.
+- **Pinning is opt-in.** A config may pin `embedding.revision` to a model hub
+  commit hash, and the shipped configs do. Without one, the hub serves its
+  latest version, so the same config can load different weights months apart.
+  The report marks such runs as unpinned rather than hiding it. A branch or tag
+  name is accepted too, but only a commit hash guarantees fixed weights.
+- **Library versions matter too.** Pinned weights run through
+  `sentence-transformers`, `transformers`, and `torch`, whose versions are fixed
+  by `uv.lock` but not recorded in the report. Numbers reproduce exactly only
+  with the locked environment.

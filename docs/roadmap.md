@@ -4,17 +4,23 @@ Deferred work, with the reason for deferring it. The core harness is
 deliberately small; anything here was considered and left out on purpose.
 
 Status: `planned` (intended next), `considered` (would be useful, not
-committed), `rejected` (deliberately out of scope).
+committed), `rejected` (deliberately out of scope), `done` (shipped, kept here
+so the reasoning stays next to the rest).
 
 ## Input quality
 
+**Truncation counts in the report** — `done`
+
+The report's Inputs section counts documents and queries longer than the
+model's input limit. On SciFact this is the number that says how much of the
+corpus the model never sees.
+
 **Corpus statistics in the report** — `planned`
 
-Document and query counts, min/median/max text length, empty texts, exact
+Extends the Inputs section: min/median/max text length, empty texts, exact
 duplicate text groups, and a count of documents containing markup-like
 substrings. Characterizes the inputs without modifying them, so a reader who
-sees an unexpected score has somewhere to look first. Roughly 20 lines plus a
-report section. Deferred until the core run is green end to end.
+sees an unexpected score has somewhere to look first.
 
 **Near-duplicate detection** — `considered`
 
@@ -32,12 +38,18 @@ makes "does cleaning improve recall@10?" unanswerable. See `limitations.md`.
 
 ## Reproducibility
 
-**Pin model revisions** — `planned`
+**Pin model revisions** — `done`
 
-Accept an optional revision hash beside `model_name` in the embedding config,
-pass it to the backend, and record the resolved revision in the run metadata so
-a report states exactly which weights produced it. Small change, and it closes
-the largest hole in the harness's reproducibility claim.
+`embedding.revision` is passed to the backend and shown in the report, and the
+shipped configs pin a commit hash. What the report records is the configured
+revision, not one resolved at run time: with a commit hash the two are the
+same, which is why the configs use one.
+
+**Record library versions in the run** — `considered`
+
+Pinned weights still run through `sentence-transformers`, `transformers`, and
+`torch`. Writing their versions into the report would make a run
+self-describing without needing `uv.lock` alongside it.
 
 ## Retrieval
 
