@@ -69,9 +69,28 @@ def test_load_config_applies_defaults_for_optional_fields(tmp_path):
     assert config.retrieval == RetrievalConfig()
 
 
+def test_revision_is_optional_and_unpinned_by_default(tmp_path):
+    config = load_config(_write(tmp_path, VALID))
+    assert config.embedding.revision is None
+
+
+def test_revision_is_loaded_when_given(tmp_path):
+    raw = copy.deepcopy(VALID)
+    raw["embedding"]["revision"] = "abc123"
+    assert load_config(_write(tmp_path, raw)).embedding.revision == "abc123"
+
+
 def test_example_config_in_repo_loads():
     config = load_config(str(EXAMPLE_CONFIG))
     assert config.retrieval.top_k > 0
+
+
+@pytest.mark.parametrize("name", ["example.yaml", "scifact.yaml"])
+def test_shipped_configs_pin_a_full_commit_hash(name):
+    revision = load_config(str(EXAMPLE_CONFIG.parent / name)).embedding.revision
+    assert revision is not None
+    assert len(revision) == 40
+    assert all(c in "0123456789abcdef" for c in revision)
 
 
 # load_config: malformed input

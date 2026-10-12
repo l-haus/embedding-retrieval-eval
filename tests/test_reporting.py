@@ -74,6 +74,7 @@ def test_report_has_every_section(tmp_path):
     for heading in (
         "# Retrieval Evaluation Report",
         "## Config",
+        "## Inputs",
         "## Metrics",
         "## Best and worst queries",
         "## Failure cases",
@@ -85,10 +86,46 @@ def test_report_has_every_section(tmp_path):
 def test_failure_summary_separates_misses_from_unlabelled_queries(tmp_path):
     report = reporting.render_markdown_report(*_four_outcome_run(tmp_path))
     assert (
-        "2 of 3 labelled queries did not retrieve a relevant document within top-k."
+        "2 of 3 labelled queries did not retrieve a relevant document within top-k:"
         in report
     )
     assert "1 of 4 queries had no relevance labels and could not be judged." in report
+
+
+def test_failure_summary_splits_near_misses_from_misses(tmp_path):
+    # top_k 2, candidate_depth 4: q2's document is at rank 3, q3's at rank 5.
+    report = reporting.render_markdown_report(*_four_outcome_run(tmp_path))
+    assert (
+        "- 1 ranked below the top 2 but within the top 4 (`relevant_ranked_low`)"
+        in report
+    )
+    assert "- 1 not within the top 4 at all (`no_relevant_retrieved`)" in report
+
+
+def test_unpinned_revision_is_flagged(tmp_path):
+    report = reporting.render_markdown_report(*_four_outcome_run(tmp_path))
+    assert "| model revision | unpinned (latest at run time) |" in report
+
+
+def test_pinned_revision_is_shown(tmp_path):
+    run, config = _four_outcome_run(tmp_path)
+    config.embedding.revision = "1110a243fdf4706b3f48f1d95db1a4f5529b4d41"
+    report = reporting.render_markdown_report(run, config)
+    assert "| model revision | `1110a243fdf4706b3f48f1d95db1a4f5529b4d41` |" in report
+
+
+def test_truncation_not_measured_is_said_plainly(tmp_path):
+    report = reporting.render_markdown_report(*_four_outcome_run(tmp_path))
+    assert "| documents | 5 | not measured |" in report
+
+
+def test_truncation_counts_and_shares_are_shown(tmp_path):
+    run, config = _four_outcome_run(tmp_path)
+    run.diagnostics |= {"documents_truncated": 2, "queries_truncated": 0}
+    report = reporting.render_markdown_report(run, config)
+    assert "| documents | 5 | 2 (40.0%) |" in report
+    assert "| queries | 4 | 0 (0.0%) |" in report
+    assert "scored on its opening only" in report
 
 
 def test_failure_summary_when_every_labelled_query_succeeds(tmp_path):

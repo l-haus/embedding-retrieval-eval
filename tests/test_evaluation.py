@@ -98,6 +98,40 @@ def test_reciprocal_rank_is_cut_at_k(tmp_path):
     assert m["mrr"] == 0.0  # MRR@k: rank 2 with k=1 contributes 0, not 1/2
 
 
+def test_diagnostics_record_counts_and_unknown_truncation(tmp_path):
+    result = evaluation.run_evaluation(_config(tmp_path), embedder=DummyEmbedder())
+    assert result.diagnostics == {
+        "num_documents": 2,
+        "documents_truncated": None,  # DummyEmbedder cannot measure it
+        "num_queries": 1,
+        "queries_truncated": None,
+    }
+
+
+def test_diagnostics_use_the_embedders_truncation_count(tmp_path):
+    class CountingEmbedder(DummyEmbedder):
+        def count_truncated(self, texts):
+            return len(texts)  # pretend every text was cut
+
+    result = evaluation.run_evaluation(_config(tmp_path), embedder=CountingEmbedder())
+    assert result.diagnostics["documents_truncated"] == 2
+    assert result.diagnostics["queries_truncated"] == 1
+
+
+def test_configured_revision_reaches_the_embedder(tmp_path, monkeypatch):
+    seen = {}
+
+    def fake_get_embedder(model_name, revision=None):
+        seen.update(model_name=model_name, revision=revision)
+        return DummyEmbedder()
+
+    monkeypatch.setattr(evaluation, "get_embedder", fake_get_embedder)
+    config = _config(tmp_path)
+    config.embedding.revision = "abc123"
+    evaluation.run_evaluation(config)
+    assert seen == {"model_name": "dummy", "revision": "abc123"}
+
+
 def test_unsupported_similarity_is_rejected_before_any_work(tmp_path):
     config = _config(tmp_path, similarity="dot")
     with pytest.raises(ValueError, match="unsupported similarity 'dot'"):

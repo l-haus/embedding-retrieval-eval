@@ -31,7 +31,9 @@ class DummyEmbedder(Embedder):
 @pytest.fixture
 def no_model(monkeypatch):
     """Replace the real embedding backend so no model is downloaded."""
-    monkeypatch.setattr(evaluation, "get_embedder", lambda name: DummyEmbedder())
+    monkeypatch.setattr(
+        evaluation, "get_embedder", lambda name, revision=None: DummyEmbedder()
+    )
 
 
 def _write_config(tmp_path, **overrides) -> str:
