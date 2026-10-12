@@ -15,6 +15,15 @@ The report's Inputs section counts documents and queries longer than the
 model's input limit. On SciFact this is the number that says how much of the
 corpus the model never sees.
 
+**Does truncation cost accuracy?** — `planned`
+
+On SciFact, 71% of abstracts exceed `all-MiniLM-L6-v2`'s 256 word-piece limit,
+so most of the corpus is embedded from its opening only. Whether that matters
+is untested. The direct check is a comparison run against a model with a longer
+input limit, which needs the `compare` command below. Worth reading alongside
+the 22 claims whose relevant abstract was not retrieved at all: if their
+evidence sits late in the abstract, truncation is a suspect.
+
 **Corpus statistics in the report** — `planned`
 
 Extends the Inputs section: min/median/max text length, empty texts, exact
