@@ -1,5 +1,7 @@
 # Embedding Retrieval Evaluation Harness
 
+[![CI](https://github.com/l-haus/embedding-retrieval-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/l-haus/embedding-retrieval-eval/actions/workflows/ci.yml)
+
 Embedding-based retrieval is usually demonstrated with a handful of queries that
 work. This harness measures whether it works across a labelled set, and when it
 doesn't, why: given documents, queries, and relevance labels, it ranks the

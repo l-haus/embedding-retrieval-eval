@@ -117,10 +117,18 @@ collect-all reporting would still need writing by hand.
 Re-embedding an unchanged corpus on every run is the main cost in repeated
 comparison runs. Keyed by model name plus text hash.
 
-**GitHub Actions running the test suite** — `planned`
+**GitHub Actions running the test suite** — `done`
 
-`make check` on push. Cheap, and makes the green suite visible rather than
-claimed.
+`make check` on every push to main and every pull request, installing from the
+lockfile with `--locked` so a stale `uv.lock` fails the build.
+
+**CPU-only torch in CI** — `considered`
+
+The tests never import torch, but it is installed as a dependency of
+sentence-transformers, and on Linux the default wheels bring several gigabytes
+of CUDA libraries. Routing torch to PyTorch's CPU index on Linux would make CI
+much faster, at the cost of a lockfile change and CPU-only torch for anyone
+installing on Linux.
 
 ## Extensions
 

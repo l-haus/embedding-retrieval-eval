@@ -1,0 +1,40 @@
+# Lint and test on every push to main and every pull request.
+#
+# Tests never load a real model or touch the network, so no model is
+# downloaded here. torch is still installed, as a dependency of
+# sentence-transformers, which is what makes the install step the slow one.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+
+      # Third-party action pinned to a commit, with its version in the comment.
+      - uses: astral-sh/setup-uv@bec219d24cd3e171d82865faccec33120bb574f4 # v10.1.0
+        with:
+          enable-cache: true
+
+      # --locked fails if uv.lock is out of date with pyproject.toml, so a
+      # forgotten `uv lock` is caught here rather than on someone else's machine.
+      # Python comes from .python-version.
+      - name: Install from the lockfile
+        run: uv sync --locked --all-extras
+
+      - name: Lint and test
+        run: make check
