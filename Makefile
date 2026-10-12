@@ -1,7 +1,7 @@
-.PHONY: help sync hooks fmt lint test cov check run clean
+.PHONY: help sync hooks fmt lint test cov check run scifact run-scifact clean
 
 help:  ## Show available targets
-	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | awk -F':.*?## ' '{printf "  %-8s %s\n", $$1, $$2}'
+	@grep -E '^[a-z-]+:.*?## ' $(MAKEFILE_LIST) | awk -F':.*?## ' '{printf "  %-12s %s\n", $$1, $$2}'
 
 sync:  ## Install the project and dev dependencies
 	uv sync --all-extras
@@ -27,6 +27,12 @@ check: lint test  ## What CI runs: lint then test
 
 run:  ## Run the harness on the example config
 	uv run retrieval-eval run --config configs/example.yaml
+
+scifact:  ## Download BEIR SciFact and convert its test split
+	uv run python -m retrieval_eval.beir scifact --split test --out data/scifact
+
+run-scifact: scifact  ## Run the harness on SciFact
+	uv run retrieval-eval run --config configs/scifact.yaml
 
 clean:  ## Remove caches and build artifacts
 	rm -rf .pytest_cache .ruff_cache .coverage htmlcov *.egg-info src/*.egg-info
