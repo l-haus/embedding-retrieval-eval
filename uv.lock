@@ -233,7 +233,7 @@ requires-dist = [
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=5.0" },
     { name = "pyyaml", specifier = ">=6.0" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
-    { name = "sentence-transformers", specifier = ">=2.2" },
+    { name = "sentence-transformers", specifier = ">=3.0" },
 ]
 provides-extras = ["dev"]
 
