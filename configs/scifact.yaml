@@ -1,0 +1,22 @@
+# BEIR SciFact, test split: 5,183 abstracts and 300 claims.
+# Prepare the data first with `make scifact`.
+#
+# Scored at top_k 10 so nDCG@10 is comparable with published BEIR figures.
+
+dataset:
+  documents_path: data/scifact/documents.jsonl
+  queries_path: data/scifact/queries.jsonl
+  labels_path: data/scifact/labels.jsonl
+
+retrieval:
+  top_k: 10
+  candidate_depth: 100
+  similarity: cosine
+
+embedding:
+  model_name: sentence-transformers/all-MiniLM-L6-v2
+  # Hub commit, so the weights cannot change under this config.
+  revision: 1110a243fdf4706b3f48f1d95db1a4f5529b4d41
+
+output:
+  run_dir: runs/scifact

@@ -36,6 +36,13 @@ class RetrievalConfig:
 @dataclass
 class EmbeddingConfig:
     model_name: str
+    revision: str | None = None
+    """Model hub revision to load: a commit hash, branch, or tag.
+
+    A commit hash pins the exact weights; a branch such as `main` moves when the
+    model is updated. Left unset, the hub serves its latest version, and the
+    report marks the run as unpinned.
+    """
 
 
 @dataclass

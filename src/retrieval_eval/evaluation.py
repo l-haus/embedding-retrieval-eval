@@ -22,6 +22,12 @@ class RunResult:
     per_query: list[dict] = field(default_factory=list)
     config: Config | None = None
     failure_cases: list[dict] = field(default_factory=list)
+    diagnostics: dict[str, int | None] = field(default_factory=dict)
+    """Facts about the inputs rather than retrieval quality.
+
+    Counts of documents and queries, and how many of each the embedder
+    truncated; a truncation count is None when the embedder cannot measure it.
+    """
 
 
 def run_evaluation(config: Config, embedder: Embedder | None = None) -> RunResult:
@@ -59,14 +65,24 @@ def run_evaluation(config: Config, embedder: Embedder | None = None) -> RunResul
     )
 
     if embedder is None:
-        embedder = get_embedder(config.embedding.model_name)
+        embedder = get_embedder(
+            config.embedding.model_name, revision=config.embedding.revision
+        )
 
     k = config.retrieval.top_k
     depth = max(k, config.retrieval.candidate_depth)
 
     doc_ids = [document.doc_id for document in dataset.documents]
-    doc_emb = embedder.encode([document.text for document in dataset.documents])
-    query_emb = embedder.encode([query.text for query in dataset.queries])
+    doc_texts = [document.text for document in dataset.documents]
+    query_texts = [query.text for query in dataset.queries]
+    doc_emb = embedder.encode(doc_texts)
+    query_emb = embedder.encode(query_texts)
+    diagnostics = {
+        "num_documents": len(doc_texts),
+        "documents_truncated": embedder.count_truncated(doc_texts),
+        "num_queries": len(query_texts),
+        "queries_truncated": embedder.count_truncated(query_texts),
+    }
 
     ranked = retrieval.cosine_top_k(query_emb, doc_emb, doc_ids, k=depth)
     retrieved_by_query = {
@@ -103,6 +119,7 @@ def run_evaluation(config: Config, embedder: Embedder | None = None) -> RunResul
         per_query=per_query,
         config=config,
         failure_cases=failure_cases,
+        diagnostics=diagnostics,
     )
 
 
